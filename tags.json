@@ -1,0 +1,13 @@
+{
+  "errors": {
+    "test": "not important",
+    "test2": "not important"
+  },
+  "messages": {
+    "test": "not important",
+    "subMessages": {
+      "subMessage1": "not important",
+      "subMessage2": "not important"
+    }
+  }
+}
