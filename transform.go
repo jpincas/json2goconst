@@ -46,11 +46,16 @@ func (jm JsonMap) walkFromRoot() ([]structRep, error) {
 }
 
 func createConstant(ss []string) string {
-	for i := range ss {
-		ss[i] = strings.Title(ss[i])
+	var titleCased []string
+
+	for _, s := range ss {
+		s = strings.Title(s)
+		s = strings.ReplaceAll(s, "-", "_")
+
+		titleCased = append(titleCased, s)
 	}
 
-	return strings.Join(ss, "_")
+	return strings.Join(titleCased, "_")
 }
 
 func createJsPath(ss []string) string {
@@ -83,6 +88,7 @@ func (jm JsonMap) walk(thisLevelName []string, children []structRep) ([]structRe
 			if err != nil {
 				return []structRep{}, err
 			}
+
 		} else {
 			var s string
 			// an error here means the json is invalid for our
@@ -98,7 +104,7 @@ func (jm JsonMap) walk(thisLevelName []string, children []structRep) ([]structRe
 		}
 	}
 
-	if len(thisLevelName) > 0 && len(defLines) > 0 {
+	if len(defLines) > 0 {
 		thisStruct := structRep{
 			name: createConstant(thisLevelName),
 			defs: strings.Join(defLines, "\n"),

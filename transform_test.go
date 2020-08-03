@@ -6,6 +6,9 @@ import "testing"
 // The tests are precise, so all spaces, tabs and line breaks must be identical.
 // Note that nodes are sorted alphabetically
 const (
+	testResSingleLevel = `	Error = "error"`
+	testResHyphen      = `	Error_Error = "error-error"`
+
 	testRes1 = `	Errors_Test = "errors.test"
 	Errors_Test2 = "errors.test2"`
 
@@ -42,12 +45,23 @@ func TestTransform(t *testing.T) {
 			"{",
 			"",
 		},
-
 		{
 			"empty json object",
 			false,
 			"{}",
 			"",
+		},
+		{
+			"top level string key (no nesting)",
+			false,
+			`{"error": "not important"}`,
+			testResSingleLevel,
+		},
+		{
+			"hyphen in path",
+			false,
+			`{"error-error": "not important"}`,
+			testResHyphen,
 		},
 		{
 			"single struct, single level, two members",
