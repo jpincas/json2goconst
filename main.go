@@ -11,7 +11,7 @@ func main() {
 	flag.StringVar(&inputFile, "in", "tags.json", "input file name")
 	flag.StringVar(&outputFile, "out", "tags.go", "output file name")
 	flag.StringVar(&packageName, "p", "main", "Go package name")
-	flag.StringVar(&root, "rooot", "", "Root node to start walking from")
+	flag.StringVar(&root, "root", "", "Root node to start walking from")
 	flag.Parse()
 
 	dat, err := ioutil.ReadFile(inputFile)
