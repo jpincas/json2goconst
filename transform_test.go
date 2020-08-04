@@ -25,46 +25,56 @@ const (
 
 	Messages_SubMessages_SubMessage1 = "messages.subMessages.subMessage1"
 	Messages_SubMessages_SubMessage2 = "messages.subMessages.subMessage2"`
+
+	testRes4 = `	Test = "test"
+	Test2 = "test2"`
 )
 
 func TestTransform(t *testing.T) {
 	testCases := []struct {
 		name            string
+		root            string
 		expectedError   bool
 		input, expected string
 	}{
 		{
 			"blank input",
+			"",
 			true,
 			"",
 			"",
 		},
 		{
 			"invalid json",
+			"",
 			true,
 			"{",
 			"",
 		},
 		{
 			"empty json object",
+			"",
 			false,
 			"{}",
 			"",
 		},
 		{
 			"top level string key (no nesting)",
+			"",
 			false,
 			`{"error": "not important"}`,
 			testResSingleLevel,
 		},
 		{
 			"hyphen in path",
+			"",
 			false,
 			`{"error-error": "not important"}`,
 			testResHyphen,
 		},
 		{
 			"single struct, single level, two members",
+			"",
 			false,
 			`{"errors": {
 				"test": "not important",
@@ -75,6 +85,7 @@ func TestTransform(t *testing.T) {
 		},
 		{
 			"two structs, single level, two members",
+			"",
 			false,
 			`{"errors": {
 				"test": "not important",
@@ -89,6 +100,7 @@ func TestTransform(t *testing.T) {
 		},
 		{
 			"two structs, two levels, two members",
+			"",
 			false,
 			`{"errors": {
 				"test": "not important",
@@ -104,10 +116,28 @@ func TestTransform(t *testing.T) {
 			}`,
 			testRes3,
 		},
+		{
+			"two structs, two levels, two members - root specified",
+			"errors",
+			false,
+			`{"errors": {
+				"test": "not important",
+				"test2": "not important"
+				},
+			"messages": {
+				"test": "not important",
+				"subMessages": {
+					"subMessage1": "not important",
+					"subMessage2": "not important"
+					}
+				}
+			}`,
+			testRes4,
+		},
 	}
 
 	for _, testCase := range testCases {
-		output, err := transform([]byte(testCase.input))
+		output, err := transform([]byte(testCase.input), testCase.root)
 		if testCase.expectedError && err == nil {
 			t.Fatalf("Testing %s. Expecting error but got none",
 				testCase.name,

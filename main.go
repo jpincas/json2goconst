@@ -7,16 +7,17 @@ import (
 )
 
 func main() {
-	var inputFile, outputFile, packageName string
+	var inputFile, outputFile, packageName, root string
 	flag.StringVar(&inputFile, "in", "tags.json", "input file name")
 	flag.StringVar(&outputFile, "out", "tags.go", "output file name")
 	flag.StringVar(&packageName, "p", "main", "Go package name")
+	flag.StringVar(&root, "rooot", "", "Root node to start walking from")
 	flag.Parse()
 
 	dat, err := ioutil.ReadFile(inputFile)
 	check(err)
 
-	structs, err := transform(dat)
+	structs, err := transform(dat, root)
 	check(err)
 
 	fileContents := addFileMeta(packageName, structs)

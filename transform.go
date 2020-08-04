@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -17,13 +18,30 @@ func (sp structRep) String() string {
 	return sp.defs
 }
 
-func transform(jsonData []byte) (string, error) {
-	simpleStringMap := JsonMap{}
-	if err := json.Unmarshal(jsonData, &simpleStringMap); err != nil {
+func transform(jsonData []byte, root string) (string, error) {
+	topLevel := JsonMap{}
+	if err := json.Unmarshal(jsonData, &topLevel); err != nil {
 		return "", err
 	}
 
-	structReps, err := simpleStringMap.walkFromRoot()
+	// if a root has been specified, we start from there
+	if root != "" {
+		treeUnderRoot, ok := topLevel[root]
+		if !ok {
+			return "", errors.New("Specified root node does not exist")
+		}
+
+		// If we have found something under the root,
+		// we'll try to decode that tree and use that as our starting point
+		oneLevelIn := JsonMap{}
+		if err := json.Unmarshal(treeUnderRoot, &oneLevelIn); err != nil {
+			return "", err
+		}
+
+		topLevel = oneLevelIn
+	}
+
+	structReps, err := topLevel.walkFromRoot()
 	if err != nil {
 		return "", err
 	}
