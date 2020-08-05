@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -21,6 +23,11 @@ func main() {
 	check(err)
 
 	fileContents := addFileMeta(packageName, structs)
+
+	fp := filepath.Dir(outputFile)
+	if _, err := os.Stat(fp); os.IsNotExist(err) {
+		os.MkdirAll(fp, os.ModePerm)
+	}
 
 	err = ioutil.WriteFile(outputFile, []byte(fileContents), 0644)
 	check(err)
